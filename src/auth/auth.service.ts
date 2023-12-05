@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/createUser.dto';
+import { LoginDto } from './dtos/login.dto';
 
 
 @Injectable()
@@ -18,11 +19,8 @@ export class AuthService {
       return createdUser
 
     } catch (error) {
-      throw new HttpException('Missing params.', HttpStatus.BAD_REQUEST)
+      throw new HttpException('Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
     }
-
-
-
 
   }
 
@@ -44,16 +42,11 @@ export class AuthService {
     }
   }
 
-  async login({email, password}) {
-    const user = await this.prismaService.users.findFirst({
-      where: {
-        email,
-        password
-      }
-    })
+  async login(loginData: LoginDto) {
+    const user = await this.findOne(loginData)
 
     if (!user) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND)
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND)
     }
 
     return this.createToken(user)
@@ -61,6 +54,17 @@ export class AuthService {
 
   async list() {
     return this.prismaService.users.findMany()
+  }
+
+  private async findOne(data: LoginDto) {
+    const user = await this.prismaService.users.findFirst({
+      where: {
+        email: data.email,
+        password: data.password
+      }
+    })
+
+    return user
   }
 
 }
