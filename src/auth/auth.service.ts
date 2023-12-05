@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { LoginDto } from './dtos/login.dto';
+import { EditUserDto } from './dtos/editUser.dto';
 
 
 @Injectable()
@@ -33,12 +34,11 @@ export class AuthService {
     return {"token": token}
   }
 
-  async isValidToken(token: string){
+  isValidToken(token: string){
     try {
-      const decoded = this.jwtService.verify(token)
-      return decoded
+      return this.jwtService.verify(token)
     } catch (error) {
-      throw new Error(error)
+      throw new HttpException('Forbidden resource.', HttpStatus.FORBIDDEN)
     }
   }
 
@@ -53,7 +53,16 @@ export class AuthService {
   }
 
   async list() {
-    return this.prismaService.users.findMany()
+    return this.prismaService.users.findMany({
+      select: {
+        id:false,
+        password:false,
+        email: true,
+        name: true,
+        orders: true,
+        role: true
+      }
+    })
   }
 
   private async findOne(data: LoginDto) {
@@ -65,6 +74,26 @@ export class AuthService {
     })
 
     return user
+  }
+
+  async edit(id: string, editUserDto: EditUserDto) {
+    try {
+      const numId = parseInt(id)
+      const editedUser = await this.prismaService.users.update({
+        where: {
+          id: numId
+        },
+        data: editUserDto
+      })
+
+      if(!editedUser) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+      }
+    } catch (error) {
+      console.error(error)
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
   }
 
 }

@@ -2,10 +2,11 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, Get, Post, Header } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
+import { EditUserDto } from './dtos/editUser.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,5 +25,10 @@ export class AuthController {
   @Post('/login')
   async login(@Body() loginData: LoginDto) {
     return this.authService.login(loginData)
+  }
+
+  @Put('/edit/:id')
+  async edit(@Body() user: EditUserDto, @Param() {id}) {
+    return this.authService.edit(id, user)
   }
 }
