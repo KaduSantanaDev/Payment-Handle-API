@@ -8,10 +8,22 @@ import { CreateUserDto } from './dtos/createUser.dto';
 export class AuthService {
   constructor(private readonly prismaService: PrismaService, private readonly jwtService: JwtService){}
   async register(user: CreateUserDto){
-    const createdUser = await this.prismaService.users.create({
-      data: user
-    })
-    return createdUser
+    try {
+      const createdUser = await this.prismaService.users.create({
+        data: user
+      })
+      if (createdUser.email === null || createdUser.name === null || createdUser.password === null) {
+        throw new HttpException('Missing params.', HttpStatus.BAD_REQUEST)
+      }
+      return createdUser
+
+    } catch (error) {
+      throw new HttpException('Missing params.', HttpStatus.BAD_REQUEST)
+    }
+
+
+
+
   }
 
   private createToken({name, email}){
