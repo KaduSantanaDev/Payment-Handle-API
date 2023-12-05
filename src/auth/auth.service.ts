@@ -4,15 +4,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { LoginDto } from './dtos/login.dto';
 import { EditUserDto } from './dtos/editUser.dto';
-
+import { hash } from 'bcrypt'
 
 @Injectable()
 export class AuthService {
   constructor(private readonly prismaService: PrismaService, private readonly jwtService: JwtService){}
   async register(user: CreateUserDto){
     try {
+      const password = await this.hashPassword(user.password)
       const createdUser = await this.prismaService.users.create({
-        data: user
+        data: {
+          ...user,
+          password
+        }
       })
       if (createdUser.email === null || createdUser.name === null || createdUser.password === null) {
         throw new HttpException('Missing params.', HttpStatus.BAD_REQUEST)
@@ -94,6 +98,10 @@ export class AuthService {
       throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+  }
+  
+  private  async hashPassword(password) {
+    return hash(password, 8)
   }
 
 }
