@@ -20,7 +20,6 @@ export class OrderController {
   @UseGuards(AuthGuard)
   @Post('create')
   async create(@Req() req) {
-    console.log(req.tokenPayload.email)
     return this.orderService.create(req.tokenPayload.email)
   }
 }
