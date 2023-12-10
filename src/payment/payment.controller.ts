@@ -1,9 +1,9 @@
 import { Param, Controller, Get, Post } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-
 @Controller('payment')
 export class PaymentController {
     constructor(private readonly paymentService: PaymentService){}
+
     @Post('checkout')
     async pay() {
         return this.paymentService.generatePayment()
@@ -14,5 +14,5 @@ export class PaymentController {
         console.log(id)
         return this.paymentService.retrieveSession(id)
     }
-    
+
 }

@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Stripe } from 'stripe'
+import { ProductType } from './enums/productType.enum';
 
 @Injectable()
 export class PaymentService {
@@ -15,6 +16,7 @@ export class PaymentService {
             quantity: 1
           }
         ],
+        allow_promotion_codes: true,
         payment_method_types: ['card', 'boleto'],
         mode: 'payment'
       })
@@ -38,7 +40,8 @@ export class PaymentService {
   }
 
 
-
+  async genPromocode() {
+  }
 
 
 }
