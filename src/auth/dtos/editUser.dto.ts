@@ -14,8 +14,4 @@ export abstract class EditUserDto {
   @ApiPropertyOptional({example: 'Newpassword@123456', description: 'New password.'})
   password?: string
 
-  @IsOptional()
-  @IsEnum(Role)
-  @ApiPropertyOptional({ enum: ['Admin', 'User']})
-  role?: Role
 }

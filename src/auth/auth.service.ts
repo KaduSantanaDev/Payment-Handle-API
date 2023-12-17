@@ -22,10 +22,10 @@ export class AuthService {
           password
         }
       })
-      if (createdUser.email === null || createdUser.name === null || createdUser.password === null) {
+      if (createdUser.email === null || createdUser.password === null) {
         throw new HttpException('Missing params.', HttpStatus.BAD_REQUEST)
       }
-      return createdUser
+      return {'status': HttpStatus.CREATED, message: 'Usuário criado com sucesso!'}
 
     } catch (error) {
       throw new HttpException('Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -33,9 +33,8 @@ export class AuthService {
 
   }
 
-  private createToken({name, email}){
+  private createToken({email}){
     const token = this.jwtService.sign({
-      name,
       email
     })
 
@@ -51,7 +50,9 @@ export class AuthService {
   }
 
   async login(loginData: LoginDto) {
-    const user = await this.prismaService.users.findFirst({where: {email: loginData.email}})
+    const user = await this.prismaService.users.findFirst({where: {
+      email: loginData.email
+    }})
     const password = compare(loginData.password, user.password)
 
 
@@ -68,9 +69,7 @@ export class AuthService {
         id:false,
         password:false,
         email: true,
-        name: true,
         orders: true,
-        role: true
       }
     })
   }
@@ -116,7 +115,7 @@ export class AuthService {
 
   }
 
-  private  async hashPassword(password) {
+  private async hashPassword(password) {
     return hash(password, 8)
   }
 

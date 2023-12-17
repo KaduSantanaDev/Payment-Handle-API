@@ -1,4 +1,4 @@
-import { Param, Controller, Get, Post, HttpStatus, UseGuards, Req, Put, Body } from '@nestjs/common';
+import { Param, Controller, Get, Post, HttpStatus, UseGuards, Req, Put, Body, Query } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
@@ -22,9 +22,9 @@ export class PaymentController {
     return this.paymentService.retrieveSessionStatus(id, req.tokenPayload.email)
   }
 
-  @Get('success')
-  async success() {
-    return HttpStatus.OK
+  @Get('products')
+  async success(@Query('productName') productName) {
+    return this.paymentService.getProductByName(productName)
   }
 
 }

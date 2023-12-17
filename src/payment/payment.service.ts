@@ -26,6 +26,25 @@ export class PaymentService {
   }
 
 
+  async getProductByName(productName) {
+    try {
+      const products = await this.stripe.products.list({ limit: 100 }); // Ajuste o limite conforme necessário
+
+      const foundProduct = products.data.find(product => product.name === productName);
+
+      if (foundProduct) {
+        console.log('Produto encontrado:', foundProduct);
+        return foundProduct;
+      } else {
+        console.log('Produto não encontrado.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+      throw error;
+    }
+  }
+
   private async getSession(sessionId: string) {
     try {
       const session = await this.stripe.checkout.sessions.retrieve(sessionId)
@@ -34,5 +53,7 @@ export class PaymentService {
       console.error(error)
     }
   }
+
+  // to-do: Ao gerar um pagamento atrelar o usuario à order
 }
 
