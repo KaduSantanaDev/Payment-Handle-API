@@ -5,10 +5,14 @@ import { CreateUserDto } from './dtos/createUser.dto';
 import { LoginDto } from './dtos/login.dto';
 import { EditUserDto } from './dtos/editUser.dto';
 import { hash } from 'bcrypt'
+import { compare } from 'bcrypt';
+import { Role } from './enums/RoleEnum';
+import { Status } from 'src/order/enums/status.enum';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly prismaService: PrismaService, private readonly jwtService: JwtService){}
+
   async register(user: CreateUserDto){
     try {
       const password = await this.hashPassword(user.password)
@@ -47,9 +51,11 @@ export class AuthService {
   }
 
   async login(loginData: LoginDto) {
-    const user = await this.findOne(loginData)
+    const user = await this.prismaService.users.findFirst({where: {email: loginData.email}})
+    const password = compare(loginData.password, user.password)
 
-    if (!user) {
+
+    if (!user || !password) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND)
     }
 
@@ -69,15 +75,25 @@ export class AuthService {
     })
   }
 
-  private async findOne(data: LoginDto) {
+  async findOne(email: string) {
     const user = await this.prismaService.users.findFirst({
       where: {
-        email: data.email,
-        password: data.password
+        email
       }
     })
 
     return user
+  }
+
+  async findByEmail(email: string) {
+    return this.prismaService.users.findUnique({
+      where: {
+        email
+      },
+      select: {
+        orders: true
+      },
+    })
   }
 
   async edit(id: string, editUserDto: EditUserDto) {
@@ -99,7 +115,7 @@ export class AuthService {
     }
 
   }
-  
+
   private  async hashPassword(password) {
     return hash(password, 8)
   }

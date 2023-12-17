@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dtos/createOrder.dto';
+import { Status } from './enums/status.enum';
+import { UpdateOrder } from './dtos/updateOrder.dto';
 
 @Injectable()
 export class OrderService {
@@ -22,6 +24,17 @@ export class OrderService {
     return this.prismaService.orders.create({
       data: {
         userId: user.id
+      }
+    })
+  }
+
+  async changeOrderStatus(id, status) {
+    await this.prismaService.orders.update({
+      where: {
+        id
+      },
+      data: {
+        status
       }
     })
   }

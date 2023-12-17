@@ -7,7 +7,9 @@ import { CreateUserDto } from './dtos/createUser.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { EditUserDto } from './dtos/editUser.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService){}
@@ -28,7 +30,7 @@ export class AuthController {
   }
 
   @Put('/edit/:id')
-  async edit(@Body() user: EditUserDto, @Param() {id}) {
+  async edit(@Body() user: EditUserDto, @Param('id') id) {
     return this.authService.edit(id, user)
   }
 }
