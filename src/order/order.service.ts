@@ -10,11 +10,14 @@ export class OrderService {
   constructor(private readonly prismaService: PrismaService, private readonly authService: AuthService) {}
 
   async list() {
-    return this.prismaService.orders.findMany()
+    return this.prismaService.orders.findMany({
+      include: {
+        user: true
+      }
+    })
   }
 
   async create(email: string) {
-    console.log({"email": email})
     const user = await this.prismaService.users.findUnique({
       where: {email}
     })
@@ -24,6 +27,9 @@ export class OrderService {
     return this.prismaService.orders.create({
       data: {
         userId: user.id
+      },
+      include: {
+        user: false,
       }
     })
   }

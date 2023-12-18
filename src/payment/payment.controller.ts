@@ -12,8 +12,8 @@ export class PaymentController {
 
   @UseGuards(AuthGuard)
   @Post('checkout')
-  async pay(@Body('type') productType) {
-    return this.paymentService.generatePayment(productType)
+  async pay(@Body('type') productType, @Req() req) {
+    return this.paymentService.generatePayment(productType, req.tokenPayload.email)
   }
 
   @UseGuards(AuthGuard)

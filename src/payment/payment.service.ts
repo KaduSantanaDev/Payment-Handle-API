@@ -10,8 +10,8 @@ import { ProductType } from './enums/productType.enum';
 export class PaymentService {
   private stripe = new Stripe('sk_test_51My4ZJAtJK3MHkH3LteOSfCkfrDZd2BZAUnro0ncwzHwZt3WWEusLZYkGU3BJH0YSB6IQuHy3N6r0MUK3nXawp4i00FUdhAfH7', {apiVersion: '2023-10-16'})
   constructor(private readonly stripeService: StripeService, private readonly orderService: OrderService, private readonly authService: AuthService) {}
-  async generatePayment(product: ProductType) {
-    return this.stripeService.checkout(product)
+  async generatePayment(product: ProductType, token) {
+    return this.stripeService.checkout(product, token)
   }
 
   async retrieveSessionStatus(sessionId: string, userEmail: string) {
@@ -28,13 +28,12 @@ export class PaymentService {
 
   async getProductByName(productName) {
     try {
-      const products = await this.stripe.products.list({ limit: 100 }); // Ajuste o limite conforme necessário
+      const products = await this.stripe.products.list(); // Ajuste o limite conforme necessário
 
       const foundProduct = products.data.find(product => product.name === productName);
 
       if (foundProduct) {
-        console.log('Produto encontrado:', foundProduct);
-        return foundProduct;
+        return foundProduct
       } else {
         console.log('Produto não encontrado.');
         return null;
