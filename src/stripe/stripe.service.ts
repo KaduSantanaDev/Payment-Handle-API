@@ -29,7 +29,7 @@ export class StripeService {
       });
       await this.orderService.create(email)
       const data = await this.authService.findByEmail(email)
-      return {'url': session.url, 'id': session.id, 'price':  `R$${(session.amount_total/100).toFixed(2).replace('.', ',')}`, 'description': this.getProductDescription(product), 'name': this.getProductType(product).name, 'client_data': data}
+      return {'url': session.url, 'id': session.id, 'price':  `R$ ${(session.amount_total/100).toFixed(2).replace('.', ',')}`, 'description': this.getProductDescription(product), 'name': this.getProductType(product).name, 'client_data': data}
     } catch (error) {
       console.error(error)
       throw new HttpException('An error occured', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -57,7 +57,7 @@ export class StripeService {
       name = '1 Bilhão'
     }
     else if(type == Products.UNLOCK_ALL) {
-      price = 'price_1OOCFdAtJK3MHkH33Mzpb4j0'
+      price = 'price_1OPgtyAtJK3MHkH3YRZuuuxn'
       name = 'Unlock All'
     }
     else if(type == Products.LEVEL_UP_500) {
